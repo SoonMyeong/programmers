@@ -1,5 +1,8 @@
 package com.soon.world.level3.정수삼각형;
 
+/**
+ * dp 문제, 최대값 최소값 관련 해서 보통 dp 가 많이 나오는 편이라고 한다.
+ */
 public class Solution {
     public int solution(int[][] triangle) {
         int answer = 0;
