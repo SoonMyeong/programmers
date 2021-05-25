@@ -6,6 +6,7 @@ import java.util.Arrays;
  * 이분탐색 유형의 문제..?
  *  - 이분탐색 (mid)
  *  - 걸리는 시간의 최소,최대 를 이분탐색의 left ,right 로 설정 후 mid 를 사용 하여 sum 해 준다.
+ *
  */
 public class Solution {
     public long solution(int n, int[] times) {
