@@ -62,10 +62,48 @@ public class Solution {
 
         return answer;
     }
+
+    public int solutionHoya(int[] p, int location) {
+        int length = p.length;
+        int size = p.length - 1;
+        int [] test = Arrays.copyOf(p,p.length);
+
+        for(int i=0; i<length; i++){
+            boolean flag = false;
+            int tmp = p[i];
+            for(int j=i; j<length; j++){
+                if(flag){
+                    p[j - 1] = p[j];
+                    if(j == size){
+                        p[size] = tmp;
+                        flag = false;
+                        tmp = p[i];
+                        j=i;
+                    }
+                }else{
+                    if(tmp < p[j]){
+                        j = i;
+                        flag = true;
+                        if(location == i){
+                            location = size;
+                        }else if(location > i){
+                            location--;
+                        }
+                    }
+                }
+            }
+        }
+        return location+1;
+    }
+
+
+
+
     public static void main(String[] args) {
         int[] priorities = {1,1,9,1,1,1};
         int location = 0;
         Solution solution  = new Solution();
-        System.out.println(solution.solution(priorities,location));
+//        System.out.println(solution.solution(priorities,location));
+        System.out.println(solution.solutionHoya(priorities,location));
     }
 }
