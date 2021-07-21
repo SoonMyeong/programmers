@@ -14,7 +14,6 @@ import java.util.List;
  * 3. 실패율 :  count / (stage.length -personCount) 값과 현재 스테이지를 Failed 객체로 저장 후 리스트에 담는다.
  * 3-1. personCount 의 경우 현재 값 + count 값만큼 늘어난다. (예제의 경우 0, 1, 3 ...)
  * 4. 리스트를 failedScore 기준 내림차순, 값이 같을땐 stage 기준 오름차순으로 정렬 해 준다. (핵심)
- * 5. 정렬 한 뒤 stage 값을 answer 배열에 담는다.
  */
 public class Solution {
 
@@ -67,12 +66,8 @@ public class Solution {
             }
             return Double.compare(o2.failScore,o1.failScore);
         });
-        //5
-        for(int i=0; i<N; i++) {
-            answer[i] = failedList.get(i).stage;
-        }
 
-        return answer;
+        return failedList.stream().mapToInt(Failed::getStage).toArray();
     }
 
     public static void main(String[] args) {
