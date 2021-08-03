@@ -2,6 +2,8 @@ package com.soon.world.review.level3.디스크컨트롤러;
 
 //디스크 컨트롤러 리뷰
 
+import sun.util.resources.cldr.sah.CalendarData_sah_RU;
+
 import java.util.*;
 
 /**
@@ -28,7 +30,6 @@ public class Solution {
             this.request = request;
             this.working = working;
         }
-
     }
 
     public int solution(int[][] jobs) {
@@ -67,7 +68,7 @@ public class Solution {
 
     public static void main(String[] args) {
         Solution solution = new Solution();
-        int[][] jobs = {{0,1},{2,9},{3,6}};
+        int[][] jobs = {{0,3},{1,9},{2,6}};
         System.out.println(solution.solution(jobs));
     }
 }
