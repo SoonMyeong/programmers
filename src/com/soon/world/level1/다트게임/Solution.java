@@ -37,9 +37,7 @@ public class Solution {
         }
         arr.add(num); // 마지막 값
 
-        for(int a : arr) {
-            answer += a;
-        }
+        answer = arr.stream().reduce(Integer::sum).get();
 
         return answer;
     }
