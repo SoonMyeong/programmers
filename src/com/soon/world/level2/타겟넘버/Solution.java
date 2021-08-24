@@ -16,6 +16,7 @@ public class Solution {
     public int solution(int[] numbers, int target) {
         return dfs(numbers,target,0,0);
     }
+
     public int dfs(int[] numbers, int target, int index, int sum) {
         if(index == numbers.length) {
             return target==sum ? 1: 0 ;
