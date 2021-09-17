@@ -23,13 +23,15 @@ public class Solution {
         while(j < leave.length) {
             if (set.contains(leave[j])) {
                 set.remove(leave[j]);
+                //나갈 애를 기준으로 남아있는 애들의 길이만큼 방문을 한다.
+                //예를들어 set = [1,4,2] 일 경우 2번은 1번과 4번 모두를 만난것이므로 2번자리에 setSize 인 2를 더해준다.
                 count[leave[j]-1] += set.size();
-                for (int s : set) count[s-1]++;
+                for (int s : set) count[s-1]++; //방안에 있는사람들은 서로 만난 것이므로 1씩 더해준다.
                 j++;
             } else {
                 while (++i < enter.length) {
                     set.add(enter[i]);
-                    if (enter[i] == leave[j]) break;
+                    if (enter[i] == leave[j]) break;   //방에 방문을 하다가 나갈순서에 해당하는 순번이 나오면 방에 사람 집어넣는 거를 멈춘다.
                 }
             }
         }
@@ -38,8 +40,8 @@ public class Solution {
 
 
     public static void main(String[] args) {
-        int[] enter = {1,3,2};
-        int[] leave = {1,2,3};
+        int[] enter = {1,4,2,3};
+        int[] leave = {2,1,3,4};
 
 
         Solution solution = new Solution();
