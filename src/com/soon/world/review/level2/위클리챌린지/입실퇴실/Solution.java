@@ -7,7 +7,8 @@ import java.util.Set;
 public class Solution {
 
     public int[] solution(int[] enter, int[] leave) {
-        int[] answer = new int[enter.length];
+        int[] answer = new int[enter.length]; //인덱스 자리에 회의실 사람 번호의 만난 횟수를 입력해야 합니다. 인덱스는 0부터 시작이니까 집어넣을때 해당 사람번호에서 -1해서 넣어줘야겠죠?
+                                                // 예를들면 결과에서 1번사람의 만난 횟수는 인덱스 0번에 저장됩니다.
         Set<Integer> room = new HashSet<>(); //ArrayList 를 쓸 경우 remove 시 내부 인덱스 옮기는 작업이 전체 작업시간에 부하를 일으킬 수 있습니다.
         int i = 0;
         int j = 0;
