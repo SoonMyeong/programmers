@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Solution {
 
-    //흠.. 인접그래프 구현해서 하면 될거같았는데...안된다..
+    //흠.. 인접그래프 구현해서 하면 될거같았는데...안된다....
 
     class Node {
         int num;
