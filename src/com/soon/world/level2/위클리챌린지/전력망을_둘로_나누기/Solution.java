@@ -2,6 +2,8 @@ package com.soon.world.level2.위클리챌린지.전력망을_둘로_나누기;
 
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Solution {
 
@@ -23,11 +25,11 @@ public class Solution {
             arr[wires[cnt][0]][wires[cnt][1]] = 0;
             arr[wires[cnt][1]][wires[cnt][0]] = 0;
 
-            dfs(1,n);
+            //dfs(1,n);
+            bfs(1,n);
 
             arr[wires[cnt][0]][wires[cnt][1]] = 1;
             arr[wires[cnt][1]][wires[cnt][0]] = 1;
-            System.out.println(count);
 
             Arrays.fill(visited, false);
 
@@ -43,6 +45,25 @@ public class Solution {
 
 
         return answer;
+    }
+
+    private static void bfs(int i, int n) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(i);
+        visited[i] = true;
+        count++;
+
+        while(!queue.isEmpty()) {
+            int j = queue.poll();
+
+            for(int k=1; k<=n; k++) {
+                if(!visited[k] && arr[i][k]==1) {
+                    bfs(k,n);
+                }
+            }
+
+        }
+
     }
 
     private static void dfs(int i, int n) {
