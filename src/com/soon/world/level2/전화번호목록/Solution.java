@@ -21,19 +21,13 @@ public class Solution {
         HashSet<String> set = new HashSet<>(Arrays.asList(phone_book));
 
         for (String book : set) {
-            for (int i = 1; i <= book.length(); i++) {
-                if (!book.substring(0, i).equals(book)) {
-                    map.put(book.substring(0, i), book);
+            for (int i = 1; i < book.length(); i++) {
+                if (set.contains(book.substring(0, i))) {
+                    return false;
                 }
             }
         }
 
-        for(String book : set) {
-            if (map.containsKey(book)) {
-                answer = false;
-                break;
-            }
-        }
 
         return answer;
     }
