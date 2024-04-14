@@ -11,6 +11,7 @@ public class Solution {
     boolean solution(String s) {
         boolean answer = true;
         Stack stack = new Stack();
+        Stack<Character> stack1 = new Stack<>();
         char[] cutString = s.toCharArray();
 
         for(char ch : cutString) {
