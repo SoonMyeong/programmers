@@ -31,7 +31,6 @@ public class Solution {
      */
     public int[] solution(int numer1, int denom1, int numer2, int denom2) {
         int[] answer = new int[2];
-        int gcd = gcd(4, 6);
 
         if(denom1 == denom2) {
             answer[0] = numer1 + numer2;
