@@ -3,6 +3,8 @@ package introduction.토이;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,9 +21,10 @@ public class Solution {
    2,2,2/2,1,2
    2,2/2,2/1,2
     */
+
     @Test
     void test() {
-        List<Integer> elements = List.of(2,2,2,2,4,3);
+        List<Integer> elements = List.of(2,2,2,2,3,4,3);
         int maxGroupSize = 3;
         int maxSum = 8;
 
@@ -36,19 +39,22 @@ public class Solution {
         System.out.println("---------------위 결과 정렬------------------------");
         // 정렬 수행
         List<List<List<Integer>>> sortedGroupings = sortByGroupDifference(result);
-
-        // 결과 출력
-        for (List<List<Integer>> grouping : sortedGroupings) {
-            System.out.println(grouping);
+        for(var res : sortedGroupings) {
+            System.out.println(res);
         }
-
+        List<List<List<Integer>>> finalGroupings = handleOddSizeGroups(sortedGroupings);
+        System.out.println("---------------위 결과 재정렬------------------------");
+        // 결과 출력
+        for(var res : finalGroupings) {
+            System.out.println(res);
+        }
     }
 
     private static List<List<List<Integer>>> findValidGroupings(List<Integer> elements, int maxGroupSize, int maxSum) {
         List<List<List<Integer>>> allGroupings = new ArrayList<>();
 
-        // 첫 번째 그룹을 최소 2개의 원소로 구성하기 위한 그룹 탐색
-        for (int i = 2; i <= Math.min(maxGroupSize, elements.size()); i++) {
+        // 첫 번째 그룹을 최소 1개의 원소로 구성하기 위한 그룹 탐색
+        for (int i = 1; i <= Math.min(maxGroupSize, elements.size()); i++) {
             List<Integer> firstGroup = elements.subList(0, i);
             int firstGroupSum = firstGroup.stream().mapToInt(Integer::intValue).sum();
 
@@ -110,6 +116,13 @@ public class Solution {
                 })
                 .collect(Collectors.toList());
     }
+    private static List<List<List<Integer>>> findOptimalGrouping(List<List<List<Integer>>> groupings) {
+        return groupings.stream()
+                .sorted(Comparator.comparingDouble(Solution::calculateGroupDifference))
+                .findFirst()
+                .map(Collections::singletonList)
+                .orElse(Collections.emptyList());
+    }
 
     private static double calculateGroupDifference(List<List<Integer>> grouping) {
         // 그룹의 합을 계산
@@ -134,5 +147,28 @@ public class Solution {
 
         // 평균 차이 계산
         return count > 0 ? (double) totalDifference / count : 0;
+    }
+    private static List<List<List<Integer>>> handleOddSizeGroups(List<List<List<Integer>>> groupings) {
+        return groupings.stream()
+                .map(Solution::adjustLastGroupIfOdd)
+                .collect(Collectors.toList());
+    }
+
+    private static List<List<Integer>> adjustLastGroupIfOdd(List<List<Integer>> grouping) {
+        if (grouping.size() % 2 != 0) {
+            // 그룹의 개수가 홀수인 경우, 마지막 그룹을 개별 원소로 나눔
+            List<List<Integer>> adjustedGrouping = new ArrayList<>(grouping);
+            List<Integer> lastGroup = adjustedGrouping.remove(adjustedGrouping.size() - 1);
+
+            // 마지막 그룹의 원소를 개별 원소로 나누어 새로운 그룹으로 추가
+            for (Integer element : lastGroup) {
+                adjustedGrouping.add(Collections.singletonList(element));
+            }
+
+            return adjustedGrouping;
+        } else {
+            // 그룹의 개수가 짝수인 경우는 그대로 반환
+            return grouping;
+        }
     }
 }
