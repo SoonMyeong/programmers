@@ -2,173 +2,146 @@ package introduction.토이;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Solution {
-    /*
-   2,2,2,2,4,3
-
-   2,2,2/2,4/3
-   2,2/2,2/4,3
-
-   ---
-   2,2,2,2,1,2
-   2,2,2,2/1,2
-   2,2,2/2,1,2
-   2,2/2,2/1,2
-    */
 
     @Test
-    void test() {
-        List<Integer> elements = List.of(2,2,2,2,3,4,3);
-        int maxGroupSize = 3;
-        int maxSum = 8;
+    void test2() {
+//        int[] input = {4,4,4,4,3}; odd case
+        int[] input = {4,3,3};
+        List<List<Integer>> combinations = generateCombinations(input, 8);
 
-        List<List<List<Integer>>> result = findValidGroupings(elements, maxGroupSize, maxSum)
-                .stream().distinct().collect(Collectors.toList());
 
-        // 결과 출력
-        for (List<List<Integer>> grouping : result) {
-            System.out.println(grouping);
+        System.out.println(combinations);
+        System.out.println("----------------------");
+
+        List<List<List<Integer>>> rr = findAllCompleteCombinations(combinations, input).stream()
+                .distinct()
+                .collect(Collectors.toList());
+        final var result = new ArrayList<List<List<Integer>>>();
+        for(int i = 0; i< rr.size(); i++) {
+            result.add(rr.get(i));
         }
 
-        System.out.println("---------------위 결과 정렬------------------------");
-        // 정렬 수행
-        List<List<List<Integer>>> sortedGroupings = sortByGroupDifference(result);
-        for(var res : sortedGroupings) {
-            System.out.println(res);
+        System.out.println("Complete Combinations: " + result);
+        System.out.println("-------------------");
+
+        List<List<Integer>> bestGroup = findBestGroup(result);
+        System.out.println("Best Group: " + bestGroup);
+
+        if(bestGroup.size() % 2 != 0) {
+            final var res = new ArrayList<List<List<Integer>>>();
+            List<List<Integer>> front = new ArrayList<>();
+            List<List<Integer>> back = new ArrayList<>();
+            for(int i = 0; i<bestGroup.size() -1; i++) {
+                front.add(bestGroup.get(i));
+            }
+            for(int i = 1; i<bestGroup.size(); i++) {
+                back.add(bestGroup.get(i));
+            }
+            res.add(front);
+            res.add(back);
+            List<List<Integer>> finalRes = findBestGroup(res);
+            System.out.println("Final Group :" + finalRes);
         }
-        List<List<List<Integer>>> finalGroupings = handleOddSizeGroups(sortedGroupings);
-        System.out.println("---------------위 결과 재정렬------------------------");
-        // 결과 출력
-        for(var res : finalGroupings) {
-            System.out.println(res);
-        }
+
     }
+    // 가능한 조합을 생성하는 메소드
+    public static List<List<Integer>> generateCombinations(int[] input, int maxSum) {
+        List<List<Integer>> combinations = new ArrayList<>();
 
-    private static List<List<List<Integer>>> findValidGroupings(List<Integer> elements, int maxGroupSize, int maxSum) {
-        List<List<List<Integer>>> allGroupings = new ArrayList<>();
+        for (int i = 0; i < input.length; i++) {
+            for (int length = 1; length <= 3 && i + length <= input.length; length++) {
+                List<Integer> combination = new ArrayList<>();
+                int sum = 0;
 
-        // 첫 번째 그룹을 최소 1개의 원소로 구성하기 위한 그룹 탐색
-        for (int i = 1; i <= Math.min(maxGroupSize, elements.size()); i++) {
-            List<Integer> firstGroup = elements.subList(0, i);
-            int firstGroupSum = firstGroup.stream().mapToInt(Integer::intValue).sum();
-
-            if (firstGroupSum <= maxSum) {
-                List<Integer> remainingElements = elements.subList(i, elements.size());
-                List<List<Integer>> currentGrouping = new ArrayList<>();
-                currentGrouping.add(new ArrayList<>(firstGroup));
-                findGroupings(remainingElements, maxGroupSize, maxSum, currentGrouping, allGroupings);
+                for (int j = 0; j < length; j++) {
+                    sum += input[i + j];
+                    combination.add(input[i + j]);
+                }
+                if (sum <= maxSum) {
+                    combinations.add(combination);
+                }
             }
         }
-        return allGroupings;
+
+        return combinations;
+    }
+    // 모든 조합을 사용하여 입력 배열을 완전히 사용하는 조합을 찾는 메소드
+    public static List<List<List<Integer>>> findAllCompleteCombinations(List<List<Integer>> combinations, int[] input) {
+        List<List<List<Integer>>> result = new ArrayList<>();
+        findCombinationsRecursive(combinations, 0, input, new ArrayList<>(), result);
+        return result;
     }
 
-    private static void findGroupings(List<Integer> elements, int maxGroupSize, int maxSum,
-                                      List<List<Integer>> currentGrouping,
-                                      List<List<List<Integer>>> allGroupings) {
-        if (elements.isEmpty()) {
-            // 모든 원소를 그룹화한 경우 결과에 추가
-            allGroupings.add(new ArrayList<>(currentGrouping));
+    // 재귀적으로 조합을 찾는 메소드
+    private static void findCombinationsRecursive(List<List<Integer>> combinations, int startIndex,
+                                                  int[] input, List<List<Integer>> currentCombination, List<List<List<Integer>>> result) {
+
+        if (isValidCombination(currentCombination, input)) {
+            result.add(new ArrayList<>(currentCombination));
             return;
         }
 
-        // 그룹을 만드는 시작점
-        for (int i = 2; i <= Math.min(maxGroupSize, elements.size()); i++) {
-            List<Integer> group = elements.subList(0, i);
-            int sum = group.stream().mapToInt(Integer::intValue).sum();
+        for (int i = startIndex; i < combinations.size(); i++) {
+            List<Integer> combination = combinations.get(i);
+            currentCombination.add(combination);
+            findCombinationsRecursive(combinations, i + 1, input, currentCombination, result);
+            currentCombination.remove(currentCombination.size() - 1);
+        }
+    }
 
-            if (sum <= maxSum) {
-                // 유효한 그룹이면 나머지 원소로 재귀 호출
-                List<Integer> remainingElements = elements.subList(i, elements.size());
-                List<List<Integer>> newGrouping = new ArrayList<>(currentGrouping);
-                newGrouping.add(new ArrayList<>(group));
+    // 현재 조합이 입력 배열을 완전히 사용하는지 확인하는 메소드
+    private static boolean isValidCombination(List<List<Integer>> currentCombination, int[] input) {
+        List<Integer> combinedList = new ArrayList<>();
+        for (List<Integer> comb : currentCombination) {
+            combinedList.addAll(comb);
+        }
+        if (combinedList.size() != input.length) return false;
+        for (int i = 0; i < input.length; i++) {
+            if (!combinedList.get(i).equals(input[i])) return false;
+        }
+        return true;
+    }
 
-                // 재귀 호출
-                findGroupings(remainingElements, maxGroupSize, maxSum, newGrouping, allGroupings);
+    // 가장 적은 차이값을 가지는 그룹을 찾는 메소드
+    public static List<List<Integer>> findBestGroup(List<List<List<Integer>>> groups) {
+        List<List<Integer>> bestGroup = null;
+        int minDifference = Integer.MAX_VALUE;
+
+        for (List<List<Integer>> group : groups) {
+            int difference = calculateMinDifferenceForGroup(group);
+            if (difference < minDifference) {
+                minDifference = difference;
+                bestGroup = new ArrayList<>(group); // 올바르게 깊은 복사
             }
         }
 
-        // 남은 원소들 처리: 나머지 그룹이 1개만 남은 경우 그 그룹을 추가
-        if (elements.size() > 0) {
-            List<Integer> lastGroup = elements;
-            int lastGroupSum = lastGroup.stream().mapToInt(Integer::intValue).sum();
-
-            // 마지막 그룹의 합이 최대 합 이하인 경우만 추가
-            if (lastGroupSum <= maxSum) {
-                List<List<Integer>> newGrouping = new ArrayList<>(currentGrouping);
-                newGrouping.add(new ArrayList<>(lastGroup));
-                allGroupings.add(new ArrayList<>(newGrouping));
-            }
-        }
+        return bestGroup;
     }
 
-    private static List<List<List<Integer>>> sortByGroupDifference(List<List<List<Integer>>> groupings) {
-        return groupings.stream()
-                .sorted((g1, g2) -> {
-                    double diff1 = calculateGroupDifference(g1);
-                    double diff2 = calculateGroupDifference(g2);
-                    return Double.compare(diff1, diff2);
-                })
-                .collect(Collectors.toList());
-    }
-    private static List<List<List<Integer>>> findOptimalGrouping(List<List<List<Integer>>> groupings) {
-        return groupings.stream()
-                .sorted(Comparator.comparingDouble(Solution::calculateGroupDifference))
-                .findFirst()
-                .map(Collections::singletonList)
-                .orElse(Collections.emptyList());
-    }
+    // 그룹의 페어 간 차이의 최소값을 계산하는 메소드
+    public static int calculateMinDifferenceForGroup(List<List<Integer>> group) {
+        int minDifference = 0;
 
-    private static double calculateGroupDifference(List<List<Integer>> grouping) {
-        // 그룹의 합을 계산
-        List<Integer> sums = new ArrayList<>();
-        for (List<Integer> group : grouping) {
-            sums.add(group.stream().mapToInt(Integer::intValue).sum());
+        for (int i = 0; i < group.size() - 1; i++) {
+            List<Integer> firstPair = group.get(i);
+            List<Integer> secondPair = group.get(i + 1);
+            int diff = Math.abs(sumList(firstPair) - sumList(secondPair));
+            minDifference = Math.max(minDifference, diff);
         }
 
-        // 그룹 간의 합 차이를 계산
-        int n = sums.size();
-        if (n < 2) return 0; // 그룹이 하나만 있을 때 차이는 0
-
-        int totalDifference = 0;
-        int count = 0;
-
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                totalDifference += Math.abs(sums.get(i) - sums.get(j));
-                count++;
-            }
-        }
-
-        // 평균 차이 계산
-        return count > 0 ? (double) totalDifference / count : 0;
-    }
-    private static List<List<List<Integer>>> handleOddSizeGroups(List<List<List<Integer>>> groupings) {
-        return groupings.stream()
-                .map(Solution::adjustLastGroupIfOdd)
-                .collect(Collectors.toList());
+        return minDifference;
     }
 
-    private static List<List<Integer>> adjustLastGroupIfOdd(List<List<Integer>> grouping) {
-        if (grouping.size() % 2 != 0) {
-            // 그룹의 개수가 홀수인 경우, 마지막 그룹을 개별 원소로 나눔
-            List<List<Integer>> adjustedGrouping = new ArrayList<>(grouping);
-            List<Integer> lastGroup = adjustedGrouping.remove(adjustedGrouping.size() - 1);
-
-            // 마지막 그룹의 원소를 개별 원소로 나누어 새로운 그룹으로 추가
-            for (Integer element : lastGroup) {
-                adjustedGrouping.add(Collections.singletonList(element));
-            }
-
-            return adjustedGrouping;
-        } else {
-            // 그룹의 개수가 짝수인 경우는 그대로 반환
-            return grouping;
+    // 리스트의 합을 계산하는 메소드
+    public static int sumList(List<Integer> list) {
+        int sum = 0;
+        for (int num : list) {
+            sum += num;
         }
+        return sum;
     }
 }
