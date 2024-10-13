@@ -11,6 +11,35 @@ public class Solution {
                 .isEqualTo(new String[] {"O","O","X","O"});
     }
 
+    @Test
+    void test() {
+        isPalindrome("a");
+    }
+    boolean isPalindrome(String s) {
+        final var str = s.toLowerCase().replaceAll("[^a-z]","");
+        if(str.length() < 1) {
+            return true;
+        }
+        final var split = str.split("");
+
+        if(split.length == 0) {
+            return false;
+        }
+
+        var start = 0;
+        var end = split.length -1;
+
+        while(start <= end) {
+            if(!split[start].equals(split[end])) {
+                return false;
+            }
+            start++;
+            end--;
+        }
+
+        return true;
+    }
+
     /*
         문제 : OX 퀴즈
         https://school.programmers.co.kr/learn/courses/30/lessons/120907
